@@ -1,6 +1,6 @@
 // Module Declarations
-mod server;
 mod notes;
+mod server;
 
 // Imports
 use crate::server::Server;

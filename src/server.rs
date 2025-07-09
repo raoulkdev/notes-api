@@ -89,15 +89,14 @@ impl Server {
         State(notes): State<Arc<Mutex<Vec<Note>>>>,
         Path(id): Path<u32>,
     ) -> impl IntoResponse {
-        match notes
-            .lock()
-            .unwrap()
+        let mut notes_unlocked = notes.lock().unwrap();
+        match notes_unlocked
             .clone()
             .iter()
             .position(|n| n.id == id)
         {
             Some(n) => {
-                notes.lock().unwrap().remove(n);
+                notes_unlocked.remove(n);
                 (StatusCode::NO_CONTENT, Json(n)).into_response()
             }
             None => (

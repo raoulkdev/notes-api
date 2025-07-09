@@ -16,7 +16,7 @@ impl Note {
     pub fn new(title: String, body: String) -> Self {
         static ID_COUNTER: AtomicU32 = AtomicU32::new(1);
         let id = ID_COUNTER.fetch_add(1, Ordering::Relaxed);
-        Self {id, title, body}
+        Self { id, title, body }
     }
 }
 

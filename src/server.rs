@@ -60,8 +60,13 @@ impl Server {
         Json(payload): Json<NotePayload>,
     ) -> impl IntoResponse {
         let new_note = Note::new(payload.title, payload.body);
-        notes.lock().unwrap().push(new_note.clone());
-        (StatusCode::CREATED, Json(new_note))
+
+        if !new_note.title.is_empty() {
+            notes.lock().unwrap().push(new_note.clone());
+            (StatusCode::CREATED, Json(new_note)).into_response()
+        } else {
+            (StatusCode::BAD_REQUEST, Json("Note title is empty")).into_response()
+        }
     }
 
     // Get all notes
@@ -90,11 +95,7 @@ impl Server {
         Path(id): Path<u32>,
     ) -> impl IntoResponse {
         let mut notes_unlocked = notes.lock().unwrap();
-        match notes_unlocked
-            .clone()
-            .iter()
-            .position(|n| n.id == id)
-        {
+        match notes_unlocked.clone().iter().position(|n| n.id == id) {
             Some(n) => {
                 notes_unlocked.remove(n);
                 (StatusCode::NO_CONTENT, Json(n)).into_response()

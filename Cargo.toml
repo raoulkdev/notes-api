@@ -1,0 +1,11 @@
+[package]
+name = "notes-api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1.45.1", features = ["full"] }
+futures = "0.3.31"
+axum = "0.8.4"
+colored = "3.0.0"
+serde = { version = "1.0.219", features = ["derive"] }

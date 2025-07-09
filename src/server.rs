@@ -1,6 +1,6 @@
 // Imports
 use crate::notes::{Note, NotePayload};
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
@@ -49,6 +49,7 @@ impl Server {
         Router::new()
             .route("/notes", get(Self::get_all_notes))
             .route("/notes", post(Self::add_note))
+            .route("/notes/{capture}", get(Self::get_note_by_id))
             .with_state(notes)
     }
 
@@ -65,5 +66,13 @@ impl Server {
     // Get all notes
     async fn get_all_notes(State(notes): State<Arc<Mutex<Vec<Note>>>>) -> impl IntoResponse {
         (StatusCode::OK, Json(notes.lock().unwrap().clone()))
+    }
+    
+    // Get note by ID
+    async fn get_note_by_id(State(notes): State<Arc<Mutex<Vec<Note>>>>, Path(id): Path<u32>) -> impl IntoResponse {
+        match notes.lock().unwrap().clone().iter().find(|n| n.id == id) { 
+            Some(n) => (StatusCode::FOUND, Json(n)).into_response(),
+            None => (StatusCode::NOT_FOUND, Json(format!("Could not find note with id: {id}"))).into_response()
+        }
     }
 }

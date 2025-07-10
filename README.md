@@ -3,6 +3,8 @@
 [![Top Language](https://img.shields.io/github/languages/top/raoulkdev/notes-api?style=flat&logo=c%2B%2B)](https://github.com/raoulkdev/notes-api)
 [![Contributors](https://img.shields.io/github/contributors/raoulkdev/notes-api?style=flat&logo=github)](https://github.com/raoulkdev/notes-api/graphs/contributors)
 
+You can try the API live here: https://notes-api-wfeh.onrender.com/notes
+
 > A simple, clean REST API built with **Rust** and **Axum** for creating, retrieving, and deleting text notes. This project showcases best practices for designing APIs in Rust — including modular architecture, shared in-memory state, input validation, and structured JSON responses.
 
 ---

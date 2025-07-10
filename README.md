@@ -36,8 +36,8 @@ A simple, clean REST API built with **Rust** and **Axum** for creating, retrievi
 **POST** `/notes`  
 ```json
 {
-  "title": "Learning Rust",
-  "body": "Ownership and lifetimes are key concepts!"
+  "title": "Grocery List",
+  "body": "Milk, eggs, bread, chicken, spinach, coffee"
 }
 ```
 
@@ -45,8 +45,8 @@ A simple, clean REST API built with **Rust** and **Axum** for creating, retrievi
 ```json
 {
   "id": 1,
-  "title": "Learning Rust",
-  "body": "Ownership and lifetimes are key concepts!"
+  "title": "Grocery List",
+  "body": "Milk, eggs, bread, chicken, spinach, coffee"
 }
 ```
 
@@ -60,8 +60,8 @@ A simple, clean REST API built with **Rust** and **Axum** for creating, retrievi
 [
   {
     "id": 1,
-    "title": "Learning Rust",
-    "body": "Ownership and lifetimes are key concepts!"
+    "title": "Grocery List",
+    "body": "Milk, eggs, bread, chicken, spinach, coffee"
   }
 ]
 ```
@@ -75,8 +75,8 @@ A simple, clean REST API built with **Rust** and **Axum** for creating, retrievi
 ```json
 {
   "id": 1,
-  "title": "Learning Rust",
-  "body": "Ownership and lifetimes are key concepts!"
+  "title": "Grocery List",
+  "body": "Milk, eggs, bread, chicken, spinach, coffee"
 }
 ```
 
@@ -94,11 +94,11 @@ A simple, clean REST API built with **Rust** and **Axum** for creating, retrievi
 You can use the following payloads in Postman or curl to test:
 
 ```json
-{ "title": "Rust Basics", "body": "Variables, types, and control flow." }
-{ "title": "Axum Tips", "body": "Use extractors like State and Json." }
-{ "title": "Error Handling", "body": "Avoid unwrap in production." }
-{ "title": "Atomic Counters", "body": "Good for in-memory ID generation." }
-{ "title": "Concurrency", "body": "Arc + Mutex enables safe shared state." }
+{ "title": "Grocery List", "body": "Milk, eggs, bread, chicken, spinach, coffee." }
+{ "title": "Workout Plan - Tuesday", "body": "Deadlifts, pull-ups, overhead press, core work." }
+{ "title": "Meeting Notes - July 9", "body": "Discussed Q3 goals, sprint blockers, and deployment plan." }
+{ "title": "Daily Journal - July 8", "body": "Learned Axum, went for a walk, felt productive." }
+{ "title": "Study Topics for Finals", "body": "Rust ownership, HTTP status codes, SQL joins, async JS." }
 ```
 
 ---

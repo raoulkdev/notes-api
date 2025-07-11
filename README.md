@@ -130,7 +130,7 @@ You can use the following payloads in Postman or curl to test:
 
 ---
 
-## 📚 Why This Project?
+## Why This Project?
 
 This project was built to showcase:
 - Practical use of Axum for RESTful APIs
@@ -139,6 +139,6 @@ This project was built to showcase:
 
 ---
 
-## 📇 License
+## License
 
 This project is open-source and available under the MIT License.

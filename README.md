@@ -150,7 +150,6 @@ This project was built to showcase:
 - Making RESTful APIs with Rust and Axum
 - Safe async database handling with SQLx and PostgreSQL
 - Modular, scalable code structure
-- Real-world input validation and error handling
 
 ---
 

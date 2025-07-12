@@ -63,6 +63,6 @@ pub async fn delete_note_by_id(
         .await;
     match note_to_delete {
         Ok(r) => (StatusCode::OK, Json(format!("{:?}", r))).into_response(),
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(format!("{e}"))).into_response(),
+        Err(_) => StatusCode::NO_CONTENT.into_response()
     }
 }

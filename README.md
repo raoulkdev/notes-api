@@ -3,7 +3,7 @@
 [![Top Language](https://img.shields.io/github/languages/top/raoulkdev/notes-api?style=flat&logo=c%2B%2B)](https://github.com/raoulkdev/notes-api)
 [![Contributors](https://img.shields.io/github/contributors/raoulkdev/notes-api?style=flat&logo=github)](https://github.com/raoulkdev/notes-api/graphs/contributors)
 
-> A simple, clean REST API built with **Rust** and **Axum** for creating, retrieving, and deleting text notes. This project showcases best practices for designing APIs in Rust — including modular architecture, shared in-memory state, input validation, and structured JSON responses.
+> A simple, clean REST API built with **Rust** and **Axum** for creating, retrieving, and deleting text notes that uses **PostgreSQL** for persistent data storage. This project includes modular architecture, input validation, structured JSON responses, and database integration.
 
 [Read my article about making this](https://medium.com/@nkumba/building-a-clean-notes-api-in-rust-using-axum-0bd888578c81)
 
@@ -18,21 +18,23 @@
 - Get a single note by ID via `GET /notes/{id}`
 - Delete a note by ID via `DELETE /notes/{id}`
 - Input validation (empty titles are rejected)
-- Auto-incrementing note IDs
+- Randomy generated note UUIDs with database-backed storage
 - JSON request/response format
 - Modular, extensible codebase
+- **Persistent storage with PostgreSQL**
 
 ---
 
 ## Tech Stack
 
-| Tech          | Purpose                                |
-|---------------|----------------------------------------|
-| **Rust**      | Core programming language              |
-| **Axum**      | Web framework for building APIs        |
-| **Tokio**     | Asynchronous runtime                   |
-| **Serde**     | JSON serialization and deserialization |
-
+| Tech             | Purpose                                     |
+|------------------|---------------------------------------------|
+| **Rust**         | Core programming language                   |
+| **Axum**         | Web framework for building APIs             |
+| **Tokio**        | Asynchronous runtime                        |
+| **Serde**        | JSON serialization and deserialization      |
+| **SQLx**         | Async database driver for PostgreSQL        |
+| **PostgreSQL**   | Relational data storage                     |
 
 ---
 
@@ -51,9 +53,10 @@
 **Response** `201 Created`  
 ```json
 {
-  "id": 1,
-  "title": "Grocery List",
-  "body": "Milk, eggs, bread, chicken, spinach, coffee"
+    "id": "24cdcbd6-f64b-4184-8316-073506447554",
+    "title": "Grocery List",
+    "body": "Milk, eggs, bread, chicken, spinach, coffee",
+    "created_time": "2025-07-12T22:02:53.026158"
 }
 ```
 
@@ -66,9 +69,10 @@
 ```json
 [
   {
-    "id": 1,
+    "id": "24cdcbd6-f64b-4184-8316-073506447554",
     "title": "Grocery List",
-    "body": "Milk, eggs, bread, chicken, spinach, coffee"
+    "body": "Milk, eggs, bread, chicken, spinach, coffee",
+    "created_time": "2025-07-12T22:02:53.026158"
   }
 ]
 ```
@@ -77,13 +81,14 @@
 
 ### Get Note by ID
 
-**GET** `/notes/1`  
-**Response** `302 Found`  
+**GET** `/notes/24cdcbd6-f64b-4184-8316-073506447554`  
+**Response** `200 OK`  
 ```json
 {
-  "id": 1,
-  "title": "Grocery List",
-  "body": "Milk, eggs, bread, chicken, spinach, coffee"
+    "id": "24cdcbd6-f64b-4184-8316-073506447554",
+    "title": "Grocery List",
+    "body": "Milk, eggs, bread, chicken, spinach, coffee",
+    "created_time": "2025-07-12T22:02:53.026158"
 }
 ```
 
@@ -91,7 +96,7 @@
 
 ### Delete Note by ID
 
-**DELETE** `/notes/1`  
+**DELETE** `/notes/24cdcbd6-f64b-4184-8316-073506447554`  
 **Response** `204 No Content`
 
 ---
@@ -118,12 +123,21 @@ You can use the following payloads in Postman or curl to test:
    cd notes-api
    ```
 
-2. **Run the server**  
+2. **Set up PostgreSQL**  
+   - Install PostgreSQL locally or use a cloud provider (e.g., [Supabase](https://supabase.com/) or [Neon](https://neon.tech/)).
+   - Create a database, e.g. `notes_api`.
+   - Create a `.env` file in the project root and add your database URL:
+     ```
+     DATABASE_URL=postgres://username:password@localhost:5432/notes_api
+     ```
+   - Run the migrations if provided (see any `migrations` folder or SQL script).
+
+3. **Run the server**  
    ```bash
    cargo run
    ```
 
-3. Server will start at:  
+4. Server will start at:  
    ```
    http://localhost:3000
    ```
@@ -133,9 +147,10 @@ You can use the following payloads in Postman or curl to test:
 ## Why This Project?
 
 This project was built to showcase:
-- Practical use of Axum for RESTful APIs
-- Safe concurrent state handling with `Arc<Mutex<T>>`
-- Clear code structure and scalable API design
+- Making RESTful APIs with Rust and Axum
+- Safe async database handling with SQLx and PostgreSQL
+- Modular, scalable code structure
+- Real-world input validation and error handling
 
 ---
 

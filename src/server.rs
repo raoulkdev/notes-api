@@ -1,27 +1,25 @@
 // Imports
-use crate::notes::{Note, NotePayload};
-use axum::extract::{Path, State};
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
+use crate::handlers::{add_note, delete_note_by_id, get_all_notes, get_note_by_id};
 use axum::routing::{delete, get, post};
-use axum::{Json, Router};
+use axum::{Router};
 use colored::Colorize;
-use std::sync::{Arc, Mutex};
+use sqlx::{Pool, Postgres};
+use std::sync::{Arc};
 use tokio::net::TcpListener;
 
 // Server struct
 pub struct Server {
     address: &'static str,
-    notes: Arc<Mutex<Vec<Note>>>,
+    notes_db: Arc<Pool<Postgres>>,
 }
 
 // Server implementation
 impl Server {
     // Create a new server instance
-    pub fn new(address: &'static str) -> Self {
+    pub async fn new(address: &'static str, db_url: &'static str) -> Self {
         Self {
             address,
-            notes: Arc::new(Mutex::new(vec![])),
+            notes_db: Arc::new(Self::setup_db(db_url).await.unwrap()),
         }
     }
 
@@ -36,7 +34,7 @@ impl Server {
                     "Server successfully started on: ".bright_green(),
                     addr.local_addr().unwrap()
                 );
-                axum::serve(addr, Self::router(self.notes.clone()))
+                axum::serve(addr, Self::router(self.notes_db.clone()))
                     .await
                     .unwrap();
             }
@@ -44,67 +42,43 @@ impl Server {
         }
     }
 
-    // Router
-    fn router(notes: Arc<Mutex<Vec<Note>>>) -> Router {
-        Router::new()
-            .route("/notes", get(Self::get_all_notes))
-            .route("/notes", post(Self::add_note))
-            .route("/notes/{capture}", get(Self::get_note_by_id))
-            .route("/notes/{capture}", delete(Self::delete_note_by_id))
-            .with_state(notes)
-    }
+    // Connect to and setup database
+    async fn setup_db(db_url: &'static str) -> Result<Pool<Postgres>, String> {
+        let pool = sqlx::PgPool::connect(db_url).await;
 
-    // Add note
-    async fn add_note(
-        State(notes): State<Arc<Mutex<Vec<Note>>>>,
-        Json(payload): Json<NotePayload>,
-    ) -> impl IntoResponse {
-        let new_note = Note::new(payload.title, payload.body);
+        match pool {
+            Ok(p) => {
+                println!("{}{db_url}", "Successfully connected to database at: ".bright_green());
 
-        if !new_note.title.is_empty() {
-            notes.lock().unwrap().push(new_note.clone());
-            (StatusCode::CREATED, Json(new_note)).into_response()
-        } else {
-            (StatusCode::BAD_REQUEST, Json("Note title is empty")).into_response()
-        }
-    }
-
-    // Get all notes
-    async fn get_all_notes(State(notes): State<Arc<Mutex<Vec<Note>>>>) -> impl IntoResponse {
-        (StatusCode::OK, Json(notes.lock().unwrap().clone()))
-    }
-
-    // Get note by ID
-    async fn get_note_by_id(
-        State(notes): State<Arc<Mutex<Vec<Note>>>>,
-        Path(id): Path<u32>,
-    ) -> impl IntoResponse {
-        match notes.lock().unwrap().clone().iter().find(|n| n.id == id) {
-            Some(n) => (StatusCode::FOUND, Json(n)).into_response(),
-            None => (
-                StatusCode::NOT_FOUND,
-                Json(format!("Could not find note with id: {id}")),
-            )
-                .into_response(),
-        }
-    }
-
-    // Delete note by ID
-    async fn delete_note_by_id(
-        State(notes): State<Arc<Mutex<Vec<Note>>>>,
-        Path(id): Path<u32>,
-    ) -> impl IntoResponse {
-        let mut notes_unlocked = notes.lock().unwrap();
-        match notes_unlocked.clone().iter().position(|n| n.id == id) {
-            Some(n) => {
-                notes_unlocked.remove(n);
-                (StatusCode::NO_CONTENT, Json(n)).into_response()
+                // Setup database table
+                sqlx::query(
+                    "
+                    CREATE TABLE IF NOT EXISTS notes (
+                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                        title TEXT NOT NULL,
+                        body TEXT,
+                        created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    ",
+                )
+                .execute(&p)
+                .await
+                .unwrap();
+                Ok(p)
             }
-            None => (
-                StatusCode::NOT_FOUND,
-                Json(format!("Could not find note with id: {id}")),
-            )
-                .into_response(),
+            Err(e) => {
+                Err(format!("Could not connect to database at: {db_url}. Error: {e}").to_string())
+            }
         }
+    }
+
+    // Router
+    fn router(notes_db: Arc<Pool<Postgres>>) -> Router {
+        Router::new()
+            .route("/notes", get(get_all_notes))
+            .route("/notes", post(add_note))
+            .route("/notes/{capture}", get(get_note_by_id))
+            .route("/notes/{capture}", delete(delete_note_by_id))
+            .with_state(notes_db)
     }
 }

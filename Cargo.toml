@@ -8,4 +8,6 @@ tokio = { version = "1.45.1", features = ["full"] }
 axum = "0.8.4"
 colored = "3.0.0"
 serde = { version = "1.0.219", features = ["derive"] }
-sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio", "macros"] }
+sqlx = { version = "0.8.6", features = ["postgres", "uuid", "runtime-tokio-rustls", "macros", "chrono"] }
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }

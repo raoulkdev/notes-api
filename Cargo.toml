@@ -11,3 +11,4 @@ serde = { version = "1.0.219", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["postgres", "uuid", "runtime-tokio-rustls", "macros", "chrono"] }
 uuid = { version = "1.17.0", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
+tower-http = { version = "0.6.6", features = ["full"] }

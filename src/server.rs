@@ -5,7 +5,9 @@ use axum::{Router};
 use colored::Colorize;
 use sqlx::{Pool, Postgres};
 use std::sync::{Arc};
+use axum::http::HeaderValue;
 use tokio::net::TcpListener;
+use tower_http::cors::{Any, Cors, CorsLayer};
 
 // Server struct
 pub struct Server {
@@ -80,5 +82,11 @@ impl Server {
             .route("/notes/{capture}", get(get_note_by_id))
             .route("/notes/{capture}", delete(delete_note_by_id))
             .with_state(notes_db)
+            .layer(
+                CorsLayer::new()
+                    .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())
+                    .allow_methods(Any)
+                    .allow_headers(Any)
+            )
     }
 }

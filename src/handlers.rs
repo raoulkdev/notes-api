@@ -8,6 +8,7 @@ use sqlx::{Pool, Postgres};
 use std::sync::Arc;
 use uuid::Uuid;
 
+
 // Get all notes
 pub async fn get_all_notes(State(notes_db): State<Arc<Pool<Postgres>>>) -> impl IntoResponse {
     let all_notes = sqlx::query_as::<_, Note>("SELECT * FROM notes")
